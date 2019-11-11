@@ -1,3 +1,7 @@
+# Main compilada
+main
+
+# Arquivos Haskell
 dist
 dist-*
 cabal-dev
