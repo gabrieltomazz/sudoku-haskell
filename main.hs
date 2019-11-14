@@ -22,20 +22,32 @@ isValid value row col sudoku =
         squareIsValid = validSquare value row col sudoku
     in (rowIsValid && colIsValid && squareIsValid)
 
+sudokuSolve :: [[Int]] -> [Int]
+sudokuSolve sudoku = [ value | 
+                        value <- [1..9], col <- [0..8], row <- [0..8], 
+                        (sudoku !! col !! row == 0) && (isValid value row col sudoku)]
+
+-- for value in (1..9)
+--     for col in (0..8)
+--         for row in (0..8)
+--             if (sudoku[row][col] == 0) && (isValid value row col sudoku)
+--                 sudoku[row][col] = value
+--                 output.push(value)
+
 main = do
     -- Aqui os valores com 0 são os espaços vazios
     let sudoku = [
                 [0,0,0,1,4,0,0,0,0],
-                [0,0,0,2,5,0,0,0,0],
-                [0,0,0,3,6,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0]
+                [0,0,0,1,5,0,0,0,0],
+                [0,0,0,1,6,0,0,0,0],
+                [0,0,0,1,0,0,0,0,0],
+                [0,0,0,1,0,0,0,0,0],
+                [0,0,0,1,0,0,0,0,0],
+                [0,0,0,1,0,0,0,0,0],
+                [0,0,0,1,0,0,0,0,0],
+                [0,0,0,1,0,0,0,0,0]
             ]    
-    print (isValid 5 0 3 sudoku)
+    print (sudokuSolve sudoku)
     -- print (isValid 3 2 0 sudoku)
     -- printBoard (sudoku)
     
