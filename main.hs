@@ -22,34 +22,42 @@ isValid value row col sudoku =
         squareIsValid = validSquare value row col sudoku
     in (rowIsValid && colIsValid && squareIsValid)
 
-sudokuSolve :: [[Int]] -> [Int]
-sudokuSolve sudoku = [ value | 
-                        value <- [1..9], col <- [0..8], row <- [0..8], 
-                        (sudoku !! col !! row == 0) && (isValid value row col sudoku)]
+sudokuSolve :: [[Int]] -> [[Int]]
+sudokuSolve sudoku = sudokuSolve' 0 0 sudoku
 
--- for value in (1..9)
---     for col in (0..8)
---         for row in (0..8)
---             if (sudoku[row][col] == 0) && (isValid value row col sudoku)
---                 sudoku[row][col] = value
---                 output.push(value)
+sudokuSolve' :: Int -> Int -> [[Int]] -> [[Int]]
+-- sudokuSolve' 8 8 sudoku = [ solution | value <- [1..9], solution <- updateSudoku value 8 8 sudoku, (isValid value 8 8 sudoku)]
+-- sudokuSolve' row col sudoku = 
+--     [solution | 
+--     solution <- sudokuSolve' nrow ncol sudoku, 
+--     nrow = row+1, 
+--     ncol = col+1, 
+--     value <- [1..9],
+--     (sudoku !! col !! row == 0) && (isValid value row col sudoku)]
+
+updateSudoku :: Int -> Int -> Int -> [[Int]] -> [[Int]]
+updateSudoku value row col sudoku = 
+    let sudoku_row = sudoku !! row
+        new_row = take col sudoku_row ++ [value] ++ drop (col + 1) sudoku_row
+        newSudoku = take row sudoku ++ [new_row] ++ drop (row + 1) sudoku
+    in newSudoku
 
 main = do
     -- Aqui os valores com 0 são os espaços vazios
     let sudoku = [
-                [0,0,0,1,4,0,0,0,0],
-                [0,0,0,1,5,0,0,0,0],
-                [0,0,0,1,6,0,0,0,0],
-                [0,0,0,1,0,0,0,0,0],
-                [0,0,0,1,0,0,0,0,0],
-                [0,0,0,1,0,0,0,0,0],
-                [0,0,0,1,0,0,0,0,0],
-                [0,0,0,1,0,0,0,0,0],
-                [0,0,0,1,0,0,0,0,0]
-            ]    
-    print (sudokuSolve sudoku)
+                [3,0,6,5,0,8,4,0,0], 
+                [5,2,0,0,0,0,0,0,0], 
+                [0,8,7,0,0,0,0,3,1], 
+                [0,0,3,0,1,0,0,8,0], 
+                [9,0,0,8,6,3,0,0,5], 
+                [0,5,0,0,9,0,6,0,0], 
+                [1,3,0,0,0,0,2,5,0], 
+                [0,0,0,0,0,0,0,7,4], 
+                [0,0,5,2,0,6,3,0,0]
+            ]
+    -- print (updateSudoku 9 0 1 sudoku)
     -- print (isValid 3 2 0 sudoku)
-    -- printBoard (sudoku)
+    printBoard (sudokuSolve sudoku)
     
 
 
