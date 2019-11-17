@@ -1,4 +1,6 @@
+{-# OPTIONS_GHC -Wall #-}
 import Data.List
+import Debug.Trace
 
 printBoard :: [[Int]] -> IO ()
 printBoard sudoku = mapM_ print (sudoku)
@@ -25,12 +27,18 @@ isValid value row col sudoku =
 sudokuSolve :: [[Int]] -> [[[Int]]]
 sudokuSolve sudoku = sudokuSolve' 0 0 sudoku
 
+-- row col sudoku -> return sudoku
 sudokuSolve' :: Int -> Int -> [[Int]] -> [[[Int]]]
 -- sudokuSolve' 0 1 sudoku = [solution | value <- [1..9], solution <- [updateSudoku value 0 1 sudoku], (sudoku !! 0 !! 1 == 0) && (isValid value 0 1 sudoku)]
+sudokuSolve' 0 9 sudoku = [sudoku]
+sudokuSolve' row col sudoku
+    | row == 9 = [sudoku]
+    | col == 9 = sudokuSolve' (row+1) 0 sudoku
+    | (sudoku !! row !! col == 0) = [solution | value <- [1..9], solution <- sudokuSolve' row (col+1) (updateSudoku value row col sudoku), isValid value 0 col sudoku]
+    | otherwise = sudokuSolve' row (col+1) sudoku
+        -- let ncol = col+1
+        -- in [solution | value <- [1..9], solution <- sudokuSolve' 0 ncol (updateSudoku value 0 col sudoku), (sudoku !! 0 !! col == 0) && (isValid value 0 col sudoku)]
 
-sudokuSolve' 0 col sudoku = [solution | value <- [1..9], solution <- sudokuSolve' 0 (col+1) (updateSudoku value 0 col sudoku), (sudoku !! 0 !! col == 0) && (isValid value 0 col sudoku)]
-
-sudokuSolve' _ 9 sudoku = [sudoku]
 -- sudokuSolve' row 8 sudoku = 
 --     let nrow = row + 1 
 --         ncol = 0
@@ -41,10 +49,6 @@ sudokuSolve' _ 9 sudoku = [sudoku]
 --         ncol = col+1
 --     in [solution | value <- [1..9], solution <- sudokuSolve' nrow ncol (updateSudoku value row col sudoku),  (sudoku !! col !! row == 0) && (isValid value row col sudoku)]
 
-incrementRow :: Int -> Int -> Int
-incrementRow row col = case col of 8 -> row+1
-                                   _ -> row
-
 updateSudoku :: Int -> Int -> Int -> [[Int]] -> [[Int]]
 updateSudoku value row col sudoku = 
     let sudoku_row = sudoku !! row
@@ -52,6 +56,7 @@ updateSudoku value row col sudoku =
         newSudoku = take row sudoku ++ [new_row] ++ drop (row + 1) sudoku
     in newSudoku
 
+main :: IO ()
 main = do
     -- Aqui os valores com 0 são os espaços vazios
     let sudoku = [
@@ -68,6 +73,6 @@ main = do
     --
 
     -- printBoard (head ([sudoku] ++ [sudoku]))
-    -- print (isValid 3 2 0 sudoku)
+    -- print ((sudoku !! 0 !! 1 == 0) && (isValid 1 0 1 sudoku))
 
     printBoard (head (sudokuSolve sudoku))
