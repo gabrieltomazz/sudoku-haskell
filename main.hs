@@ -30,11 +30,11 @@ sudokuSolve sudoku = sudokuSolve' 0 0 sudoku
 -- row col sudoku -> return sudoku
 sudokuSolve' :: Int -> Int -> [[Int]] -> [[[Int]]]
 -- sudokuSolve' 0 1 sudoku = [solution | value <- [1..9], solution <- [updateSudoku value 0 1 sudoku], (sudoku !! 0 !! 1 == 0) && (isValid value 0 1 sudoku)]
-sudokuSolve' 0 9 sudoku = [sudoku]
+-- sudokuSolve' 1 9 sudoku = [sudoku]
 sudokuSolve' row col sudoku
-    | row == 9 = [sudoku]
+    | row == 2 = trace "aqui" [sudoku]
     | col == 9 = sudokuSolve' (row+1) 0 sudoku
-    | (sudoku !! row !! col == 0) = [solution | value <- [1..9], solution <- sudokuSolve' row (col+1) (updateSudoku value row col sudoku), isValid value 0 col sudoku]
+    | (sudoku !! row !! col == 0) = [solution | value <- [1..9], solution <- sudokuSolve' row (col+1) (updateSudoku value row col sudoku), isValid value row col sudoku]
     | otherwise = sudokuSolve' row (col+1) sudoku
         -- let ncol = col+1
         -- in [solution | value <- [1..9], solution <- sudokuSolve' 0 ncol (updateSudoku value 0 col sudoku), (sudoku !! 0 !! col == 0) && (isValid value 0 col sudoku)]
