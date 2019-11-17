@@ -22,18 +22,28 @@ isValid value row col sudoku =
         squareIsValid = validSquare value row col sudoku
     in (rowIsValid && colIsValid && squareIsValid)
 
-sudokuSolve :: [[Int]] -> [[Int]]
+sudokuSolve :: [[Int]] -> [[[Int]]]
 sudokuSolve sudoku = sudokuSolve' 0 0 sudoku
 
-sudokuSolve' :: Int -> Int -> [[Int]] -> [[Int]]
--- sudokuSolve' 8 8 sudoku = [ solution | value <- [1..9], solution <- updateSudoku value 8 8 sudoku, (isValid value 8 8 sudoku)]
+sudokuSolve' :: Int -> Int -> [[Int]] -> [[[Int]]]
+-- sudokuSolve' 0 1 sudoku = [solution | value <- [1..9], solution <- [updateSudoku value 0 1 sudoku], (sudoku !! 0 !! 1 == 0) && (isValid value 0 1 sudoku)]
+
+sudokuSolve' 0 col sudoku = [solution | value <- [1..9], solution <- sudokuSolve' 0 (col+1) (updateSudoku value 0 col sudoku), (sudoku !! 0 !! col == 0) && (isValid value 0 col sudoku)]
+
+sudokuSolve' _ 9 sudoku = [sudoku]
+-- sudokuSolve' row 8 sudoku = 
+--     let nrow = row + 1 
+--         ncol = 0
+--     in [solution | value <- [1..9], solution <- sudokuSolve' nrow ncol (updateSudoku value row col sudoku),  (sudoku !! col !! row == 0) && (isValid value row col sudoku)]
+
 -- sudokuSolve' row col sudoku = 
---     [solution | 
---     solution <- sudokuSolve' nrow ncol sudoku, 
---     nrow = row+1, 
---     ncol = col+1, 
---     value <- [1..9],
---     (sudoku !! col !! row == 0) && (isValid value row col sudoku)]
+--     let nrow = row
+--         ncol = col+1
+--     in [solution | value <- [1..9], solution <- sudokuSolve' nrow ncol (updateSudoku value row col sudoku),  (sudoku !! col !! row == 0) && (isValid value row col sudoku)]
+
+incrementRow :: Int -> Int -> Int
+incrementRow row col = case col of 8 -> row+1
+                                   _ -> row
 
 updateSudoku :: Int -> Int -> Int -> [[Int]] -> [[Int]]
 updateSudoku value row col sudoku = 
@@ -55,9 +65,9 @@ main = do
                 [0,0,0,0,0,0,0,7,4], 
                 [0,0,5,2,0,6,3,0,0]
             ]
-    -- print (updateSudoku 9 0 1 sudoku)
+    --
+
+    -- printBoard (head ([sudoku] ++ [sudoku]))
     -- print (isValid 3 2 0 sudoku)
-    printBoard (sudokuSolve sudoku)
-    
 
-
+    printBoard (head (sudokuSolve sudoku))
